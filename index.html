@@ -1,0 +1,184 @@
+<!-- index.html – zaktualizowany -->
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#1e293b">
+  <title>NeoAutystyk</title>
+  <link rel="icon" type="image/svg+xml" href="images/ALogo.svg">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="compass.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-top">
+        <div class="logo-title">
+          <img src="images/ALogo.svg" alt="Logo NeoAutystyk" class="site-logo" loading="eager">
+          <h1>NeoAutystyk</h1>
+        </div>
+        <div class="header-controls">
+          <select id="language-select" class="language-select" aria-label="Wybierz język">
+            <option value="pl">🥟 Polski</option>
+            <option value="en">🍔 English</option>
+          </select>
+          <button id="theme-toggle" class="theme-toggle" aria-label="Przełącz tryb jasny/ciemny">🌙</button>
+        </div>
+      </div>
+      <div class="disclaimer" id="disclaimer">
+      <p><strong>⚠️ Informacja przed testem</strong></p>
+      <p>Niektóre tezy w tym teście mogą zawierać ukryte presupozycje - np. zakładać istnienie państwa, własności prywatnej, walki klasowej lub inny punkt wyjścia, z którym możesz się nie zgadzać.</p>
+      <p>Inne tezy mogą po prostu nie mieć sensu z perspektywy twojego światopoglądu.</p>
+      <p>W takich przypadkach śmiało używaj przycisku <strong>„Pomiń”</strong>. Pominięcie pytania jest w pełni akceptowalne i <strong>nie wpłynie negatywnie</strong> na wynik.</p>
+      <p><strong>Wprost przeciwnie</strong> – im bardziej szczerze i tylko na tezy, które do Ciebie rezonują, odpowiesz, tym precyzyjniejszy będzie końcowy wynik. Nie ma potrzeby odpowiadać na wszystkie pytania – nawet 20–30 sensownych odpowiedzi da wynik, choć oczywiście im więcej, tym będzie on bardziej miarodajny.</p>
+      <p>W dowolnym momencie możesz przerwać test, skopiować swój kod z dotychczasowymi wynikami i wrócić do niego później. Po zaimportowaniu kodu nie będziesz musiał zaczynać od początku - wystarczy, że zmienisz wybrane odpowiedzi.</p>
+      <p><strong>Uwaga praktyczna:</strong> eksport i import kodu działają znacznie stabilniej na komputerze niż na telefonie (urządzenia mobilne czasem obcinają bardzo długie ciągi znaków).</p>
+      <p>Przy niektórych tezach pojawi się dodatkowa podpowiedź, kiedy warto je pominąć. Traktuj ją jednak tylko jako sugestię, a nie nakaz. Możesz pominąć dowolną tezę w dowolnym momencie.</p>
+      </div>
+
+      <!-- PANEL IMPORTU ODPOWIEDZI -->
+      <div class="import-panel">
+        <label id="importLabel">📂 Import odpowiedzi</label>
+        <textarea id="importCodeArea" rows="2" placeholder="Wklej tutaj kod wyeksportowany z testu..."></textarea>
+        <button id="importBtn" class="import-action-btn">📥 Importuj i odtwórz</button>
+        <small id="importInfo">Wklej kod wygenerowany po poprzednim ukończeniu testu. Wszystkie odpowiedzi zostaną przywrócone, a wyniki przeliczone.</small>
+      </div>
+
+      <!-- PANEL SYMULACJI -->
+      <div class="simulation-panel">
+        <label for="simulateSelect" id="simulateLabel">🎭 Symuluj odpowiedzi:</label>
+        <select id="simulateSelect"></select>
+        <button id="simulateBtn" class="simulate-btn">▶ Symuluj</button>
+        <button id="restoreBtn" class="restore-btn">↺ Przywróć moje odpowiedzi</button>
+        <small id="simulateInfo">Symulacja zastąpi tymczasowo Twoje odpowiedzi. Kliknij „Przywróć”, aby wrócić do własnych.</small>
+      </div>
+    </header>
+
+    <main>
+      <div id="questions-container"></div>
+    </main>
+
+    <div class="actions">
+      <button id="submitBtn" class="btn-submit" aria-label="Pokaż wyniki testu">📊 Pokaż wyniki</button>
+    </div>
+
+    <div id="results-container" style="display: none;">
+      <hr>
+      <!-- PRZEŁĄCZNIK TRYBÓW (profilowania) -->
+      <div class="mode-selector">
+        <span id="modeLabel">🔧 Tryb liczenia:</span>
+        <label>
+          <input type="radio" name="scoringMode" value="full" checked> <span id="modeFullLabel">Tryb pełnego profilowania</span>
+        </label>
+        <label>
+          <input type="radio" name="scoringMode" value="affirmative"> <span id="modeAffirmativeLabel">Tryb afirmacyjny</span>
+        </label>
+        <button id="modeHelpBtn" class="help-btn" aria-label="Pomoc">?</button>
+      </div>
+      <div class="mode-selector matching-mode-selector">
+        <span>Tryb dopasowania:</span>
+        <label>
+          <input type="radio" name="matchingMode" value="modern" checked> <span>Nowoczesny</span>
+        </label>
+        <label>
+          <input type="radio" name="matchingMode" value="legacy"> <span>Legacy</span>
+        </label>
+      </div>
+      <h2 id="resultsTitle">Twoje wyniki</h2>
+      <div id="values-results"></div>
+      
+      <!-- NOWY KONTENER NA RANKINGI OBOK SIEBIE -->
+      <div class="ideologies-parties-container">
+        <div id="ideologies-results"></div>
+        <div id="parties-results"></div>
+        <div id="users-results"></div>
+      </div>
+
+      <!-- KOMPAS POLITYCZNY -->
+      <div id="compass-container" class="compass-wrapper"></div>
+      <div class="compass-controls">
+        <div class="compass-mode-selector">
+          <span>⚙️ Tryb obliczeń kompasu:</span>
+          <select id="compass-mode-select">
+            <option value="weighted">⚖️ Tryb wagowy</option>
+            <option value="equal">📏 Jednakowe wagi</option>
+            <option value="institutional">🏛️ Tryb Instytucjonalny</option>
+            <option value="creative">✨ Tryb Kreatywny</option>
+          </select>
+          <div class="compass-mode-desc" id="compass-mode-desc">Wagowy – uwzględnia domyślne wagi poszczególnych par.</div>
+        </div>
+        <div class="overlay-controls">
+          <label><input type="checkbox" id="toggle-parties"> 🏛️ Partie polityczne</label>
+          <label><input type="checkbox" id="toggle-ideologies"> 💡 Ideologie</label>
+          <label><input type="checkbox" id="toggle-users"> 🐻 Użytkownicy</label>
+        </div>
+        <button id="open-compass-modal" class="open-modal-btn">🔍 Otwórz pełnoekranowy panel kompasu</button>
+      </div>
+    </div>
+
+    <footer>
+      <img src="images/ALogo.svg" alt="Logo NeoAutystyk" class="footer-logo" loading="eager">
+      <p>Wersja robocza, przed ponownym nadejściem Mypolitics <br> <a href="https://x.com/CusterKnuckle" target="_blank" rel="noopener noreferrer">Autor: @CusterKnuckle</a></p>
+    </footer>
+  </div>
+
+  <!-- Popup do definicji wartości / komentarzy -->
+  <div id="popup" class="popup hidden" aria-hidden="true">
+    <div class="popup-content" role="dialog" aria-modal="true">
+      <p id="popup-text"></p>
+      <button id="closePopup" aria-label="Zamknij">Zamknij</button>
+    </div>
+  </div>
+
+  <!-- Pełnoekranowy modal kompasu -->
+  <div id="compass-modal" class="compass-modal hidden">
+    <div class="compass-modal-content">
+      <div class="compass-modal-header">
+        <h2>🧭 Analiza kompasu politycznego</h2>
+        <button id="close-modal-btn" class="close-modal-btn">&times;</button>
+      </div>
+      <div class="compass-modal-body">
+        <div id="modal-compass-container" class="compass-wrapper modal-compass"></div>
+        <div class="modal-controls">
+          <div class="compass-mode-selector">
+            <span>⚙️ Tryb obliczeń:</span>
+            <select id="modal-compass-mode-select">
+              <option value="weighted">⚖️ Tryb wagowy</option>
+              <option value="equal">📏 Jednakowe wagi</option>
+              <option value="institutional">🏛️ Tryb Instytucjonalny</option>
+              <option value="creative">✨ Tryb Kreatywny</option>
+            </select>
+          </div>
+          <div class="overlay-controls">
+            <label><input type="checkbox" id="modal-toggle-parties"> 🏛️ Partie polityczne</label>
+            <label><input type="checkbox" id="modal-toggle-ideologies"> 💡 Ideologie</label>
+            <label><input type="checkbox" id="modal-toggle-users"> 🐻 Użytkownicy</label>
+          </div>
+          <div id="creative-config-area" class="creative-config-area" style="display: none;">
+            <h4>⚙️ Konfiguracja trybu kreatywnego</h4>
+            <div class="creative-label-edit">
+              <input type="text" id="modal-label-top" placeholder="Góra" value="Heteronomia">
+              <input type="text" id="modal-label-bottom" placeholder="Dół" value="Autonomia">
+              <input type="text" id="modal-label-left" placeholder="Lewo" value="Socjalizm">
+              <input type="text" id="modal-label-right" placeholder="Prawo" value="Kapitalizm">
+              <button id="modal-apply-labels" class="secondary-btn">Zmień etykiety</button>
+            </div>
+            <div id="modal-creative-pairs-list" class="creative-pairs-list"></div>
+            <button id="modal-apply-creative" class="primary-btn">Zastosuj konfigurację kreatywną</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="badges.js"></script>
+  <script src="script.js"></script>
+  <script src="compass-core.js"></script>
+  <script src="compass-ui.js"></script>
+  <script src="compass-enhancements.js"></script>
+  <script src="modern-profile-engine.js"></script>
+</body>
+</html>

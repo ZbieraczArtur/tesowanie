@@ -1,0 +1,222 @@
+/* compass.css – dodatkowe style dla kompasu i nakładek */
+.compass-frame {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto 1fr auto;
+  gap: 8px;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.compass-outer-label {
+  font-weight: 800;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+}
+.compass-outer-label.top, .compass-outer-label.bottom {
+  text-align: center;
+}
+.compass-outer-label.left, .compass-outer-label.right {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+.compass-outer-label.left {
+  transform: rotate(180deg);
+}
+.compass {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: 4px solid var(--text-primary);
+  overflow: hidden;
+  isolation: isolate;
+  background: #fff;
+}
+.quadrant {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  pointer-events: none;
+  z-index: 1;
+  background-repeat: repeat;
+  background-size: 10% 10%;
+}
+.quadrant-tl {
+  top: 0;
+  left: 0;
+  background-color: #DD0000;
+  background-image: linear-gradient(to right, #7F0000 1px, transparent 1px), linear-gradient(to bottom, #7F0000 1px, transparent 1px);
+}
+.quadrant-tr {
+  top: 0;
+  left: 50%;
+  background-color: #0183be;
+  background-image: linear-gradient(to right, #003B6E 1px, transparent 1px), linear-gradient(to bottom, #003B6E 1px, transparent 1px);
+}
+.quadrant-bl {
+  top: 50%;
+  left: 0;
+  background-color: #101010;
+  background-image: linear-gradient(to right, #000000 1px, transparent 1px), linear-gradient(to bottom, #000000 1px, transparent 1px);
+}
+.quadrant-br {
+  top: 50%;
+  left: 50%;
+  background-color: #F4DC00;
+  background-image: linear-gradient(to right, #9D8C00 1px, transparent 1px), linear-gradient(to bottom, #9D8C00 1px, transparent 1px);
+}
+.compass::before, .compass::after {
+  content: "";
+  position: absolute;
+  background: var(--text-primary);
+  z-index: 4;
+}
+.compass::before {
+  left: 50%;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  transform: translateX(-50%);
+}
+.compass::after {
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 4px;
+  transform: translateY(-50%);
+}
+.marker {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 8;
+  width: 10px;        /* ← było 18px */
+  height: 10px;       /* ← było 18px */
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: left 0.28s cubic-bezier(0.2, 0.9, 0.4, 1.1), top 0.28s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.15), 0 0 0 4px rgba(255,255,255,0.2);  /* mniejszy cień */
+  animation: userMarkerPulse 1.8s ease-in-out infinite;
+  opacity: 0.65;  
+}
+@keyframes userMarkerPulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.25);  /* możesz zostawić 1.18, ale 1.25 lepiej widać przy małym markerze */
+  }
+}
+body:not(.dark) .marker {
+  background: #ffffff;
+  border: 2px solid #1e293b;
+  box-shadow: 0 0 0 2px rgba(30, 41, 59, 0.3), 0 0 0 6px rgba(34, 197, 94, 0.3);
+}
+body.dark .marker {
+  background: #facc15;
+  border: 2px solid #000000;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.5), 0 0 0 6px rgba(249, 115, 22, 0.5);
+}
+.compass-overlay {
+  transition: opacity 0.2s, transform 0.1s;
+}
+.compass-overlay:hover {
+  opacity: 1 !important;
+  transform: translate(-50%, -50%) scale(1.05);
+}
+.compass-stats {
+  font-size: 0.8rem;
+  padding: 0.5rem;
+  background: var(--value-bar-bg);
+  border-radius: 28px;
+  margin-top: 0.5rem;
+}
+@media (max-width: 640px) {
+  .compass-frame {
+    max-width: 100%;
+  }
+  .compass-overlay {
+    width: 28px !important;
+    height: 28px !important;
+  }
+}
+
+
+
+
+/* === Compass scaling and readable overlays === */
+.compass-frame {
+  max-width: 420px;
+}
+
+#results-container .compass-frame {
+  max-width: 320px;
+}
+
+.modal-compass .compass-frame {
+  max-width: none;
+}
+
+.compass {
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25), 0 18px 42px rgba(15,23,42,0.24);
+}
+
+.compass-overlay {
+  transition: opacity 0.2s, transform 0.1s;
+  opacity: 0.4;  /* większa przezroczystość – lepiej widać nakładające się */
+}
+.compass-overlay:hover {
+  opacity: 1 !important;
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.compass-overlay.party {
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);  /* miękki cień, brak ostrej ramki */
+  opacity: 0.6;  /* partia nieco bardziej widoczna */
+}
+.compass-overlay.ideology {
+  border-radius: 7px;
+  box-shadow: 0 2px 6px rgba(0, 100, 255, 0.15);
+  background: transparent !important;
+  opacity: 0.4;
+}
+.compass-overlay.user {
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 200, 0, 0.15);
+  background: transparent !important;
+  opacity: 0.4;
+}
+
+body.dark .compass-overlay {
+  background: rgba(248,250,252,0.92);
+  border-color: rgba(255,255,255,0.4);
+}
+
+@media (max-width: 640px) {
+  .compass-frame {
+    max-width: 300px;
+    gap: 5px;
+  }
+
+  .modal-compass .compass-frame {
+    max-width: none;
+  }
+
+  .compass-overlay {
+    width: clamp(20px, 4vw, 26px) !important;
+    height: clamp(20px, 4vw, 26px) !important;
+    padding: 2px;
+  }
+
+  .compass-stats {
+    border-radius: 8px;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.35rem;
+  }
+}
