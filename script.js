@@ -1997,10 +1997,29 @@ function initCompassAfterResults() {
 
 // Modyfikacja funkcji computeAndDisplayResults – dodanie budowania wartości kompasu i inicjalizacji
 const originalComputeAndDisplay = computeAndDisplayResults;
+// Zastąp istniejącą funkcję computeAndDisplayResults tym kodem:
 computeAndDisplayResults = function() {
+  // 1. Wywołaj oryginalną funkcję, która rysuje wyniki (pary wartości, rankingi)
   originalComputeAndDisplay();
+
+  // 2. Pobierz wyniki (pairResults) do budowy mapy wartości dla kompasu
   const { pairResults } = computeScores(currentScoringMode);
   compassUserValues = buildUserValuesMap(pairResults);
+
+  // 3. Zapisz dane do localStorage – będą potrzebne na podstronie /kompas
+  try {
+    const compassData = {
+      values: compassUserValues,
+      mode: currentCompassMode,
+      creativeConfig: currentCreativeConfig,
+      scoringMode: currentScoringMode
+    };
+    localStorage.setItem('neoAutystyk_compassData', JSON.stringify(compassData));
+  } catch (e) {
+    console.warn('Nie udało się zapisać danych kompasu do localStorage:', e);
+  }
+
+  // 4. Inicjalizacja kompasu w głównym widoku (jeśli jeszcze nie istnieje)
   if (!window.compassInstance) {
     initCompassAfterResults();
   } else {
@@ -2125,7 +2144,6 @@ loadConfig = async function() {
       modeDesc.textContent = descriptions[compassModeSelect.value];
     }
   }
-  initCompassModal();
 };
 
 // Przeładowanie funkcji symulacji, aby po symulacji odświeżyć kompas
