@@ -115,7 +115,7 @@
           <label><input type="checkbox" id="toggle-ideologies"> 💡 Ideologie</label>
           <label><input type="checkbox" id="toggle-users"> 🐻 Użytkownicy</label>
         </div>
-        <button id="open-compass-modal" class="open-modal-btn">🔍 Otwórz pełnoekranowy panel kompasu</button>
+        <a href="kompas.html" class="open-modal-btn" target="_blank">🔍 Otwórz kompas w nowej karcie</a>
       </div>
     </div>
 
@@ -133,46 +133,7 @@
     </div>
   </div>
 
-  <!-- Pełnoekranowy modal kompasu -->
-  <div id="compass-modal" class="compass-modal hidden">
-    <div class="compass-modal-content">
-      <div class="compass-modal-header">
-        <h2>🧭 Analiza kompasu politycznego</h2>
-        <button id="close-modal-btn" class="close-modal-btn">&times;</button>
-      </div>
-      <div class="compass-modal-body">
-        <div id="modal-compass-container" class="compass-wrapper modal-compass"></div>
-        <div class="modal-controls">
-          <div class="compass-mode-selector">
-            <span>⚙️ Tryb obliczeń:</span>
-            <select id="modal-compass-mode-select">
-              <option value="weighted">⚖️ Tryb wagowy</option>
-              <option value="equal">📏 Jednakowe wagi</option>
-              <option value="institutional">🏛️ Tryb Instytucjonalny</option>
-              <option value="creative">✨ Tryb Kreatywny</option>
-            </select>
-          </div>
-          <div class="overlay-controls">
-            <label><input type="checkbox" id="modal-toggle-parties"> 🏛️ Partie polityczne</label>
-            <label><input type="checkbox" id="modal-toggle-ideologies"> 💡 Ideologie</label>
-            <label><input type="checkbox" id="modal-toggle-users"> 🐻 Użytkownicy</label>
-          </div>
-          <div id="creative-config-area" class="creative-config-area" style="display: none;">
-            <h4>⚙️ Konfiguracja trybu kreatywnego</h4>
-            <div class="creative-label-edit">
-              <input type="text" id="modal-label-top" placeholder="Góra" value="Heteronomia">
-              <input type="text" id="modal-label-bottom" placeholder="Dół" value="Autonomia">
-              <input type="text" id="modal-label-left" placeholder="Lewo" value="Socjalizm">
-              <input type="text" id="modal-label-right" placeholder="Prawo" value="Kapitalizm">
-              <button id="modal-apply-labels" class="secondary-btn">Zmień etykiety</button>
-            </div>
-            <div id="modal-creative-pairs-list" class="creative-pairs-list"></div>
-            <button id="modal-apply-creative" class="primary-btn">Zastosuj konfigurację kreatywną</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+
 
   <script src="badges.js"></script>
   <script src="script.js"></script>
