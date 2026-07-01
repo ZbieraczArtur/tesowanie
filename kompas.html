@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#1e293b">
+  <title>NeoAutystyk – Kompas polityczny</title>
+  <link rel="icon" type="image/svg+xml" href="images/ALogo.svg">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="compass.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <style>
+    /* Dodatkowe style dla podstrony – dwie kolumny, przestronny layout */
+    body {
+      padding: 1.5rem;
+      background: radial-gradient(circle at 10% 20%, var(--bg-gradient-start), var(--bg-gradient-end));
+      min-height: 100vh;
+    }
+    .kompas-layout {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      align-items: start;
+    }
+    .kompas-left {
+      min-width: 0;
+    }
+    .kompas-right {
+      background: var(--card-bg);
+      backdrop-filter: blur(8px);
+      border-radius: 32px;
+      padding: 1.5rem 1.8rem;
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .kompas-right h2 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.6rem;
+    }
+    .kompas-right .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .kompas-right .control-group label {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .kompas-right select,
+    .kompas-right input[type="checkbox"] {
+      accent-color: var(--link-color);
+    }
+    .kompas-right select {
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+      background: var(--btn-bg);
+      color: var(--text-primary);
+      font-weight: 500;
+      width: 100%;
+    }
+    .kompas-right .mode-desc {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: -0.25rem;
+    }
+    .kompas-right .creative-config-area {
+      border-top: 1px solid var(--footer-border);
+      padding-top: 1rem;
+      margin-top: 0.5rem;
+      display: none;
+    }
+    .kompas-right .creative-config-area.visible {
+      display: block;
+    }
+    .kompas-right .creative-label-edit {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .kompas-right .creative-label-edit input {
+      flex: 1;
+      min-width: 80px;
+      padding: 0.4rem;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+      background: var(--btn-bg);
+      color: var(--text-primary);
+    }
+    .kompas-right .creative-pairs-list {
+      max-height: 300px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .kompas-right .creative-pair-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto 70px;
+      gap: 0.5rem;
+      align-items: center;
+      background: var(--desc-bg);
+      padding: 0.4rem 0.6rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+    .kompas-right .creative-pair-row label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    .kompas-right .creative-pair-row select,
+    .kompas-right .creative-pair-row input {
+      padding: 0.2rem 0.4rem;
+      border-radius: 6px;
+      border: 1px solid var(--card-border);
+      background: var(--btn-bg);
+      color: var(--text-primary);
+    }
+    .kompas-right .creative-pair-row input[type="checkbox"] {
+      width: 1.2rem;
+      height: 1.2rem;
+    }
+    .btn-secondary {
+      background: var(--btn-bg);
+      border: 1px solid var(--card-border);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text-primary);
+      transition: all 0.15s;
+    }
+    .btn-secondary:hover {
+      background: var(--btn-hover);
+      transform: scale(0.98);
+    }
+    .btn-primary {
+      background: var(--submit-bg);
+      border: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 8px;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-primary:hover {
+      transform: scale(0.98);
+    }
+    .kompas-right .back-link {
+      display: inline-block;
+      margin-top: 0.5rem;
+      color: var(--link-color);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .kompas-right .back-link:hover {
+      text-decoration: underline;
+    }
+    @media (max-width: 860px) {
+      .kompas-layout {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      .kompas-right {
+        order: -1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="kompas-layout">
+    <!-- LEWA KOLUMNA: kompas -->
+    <div class="kompas-left">
+      <div id="modal-compass-container" class="compass-wrapper" style="max-width: 100%;"></div>
+    </div>
+
+    <!-- PRAWA KOLUMNA: panel sterowania -->
+    <div class="kompas-right">
+      <h2>🧭 Kompas polityczny</h2>
+      <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">Twoje położenie na podstawie udzielonych odpowiedzi.</p>
+
+      <div class="control-group">
+        <label>⚙️ Tryb obliczeń:
+          <select id="compass-mode-select">
+            <option value="weighted">⚖️ Tryb wagowy</option>
+            <option value="equal">📏 Jednakowe wagi</option>
+            <option value="institutional">🏛️ Tryb Instytucjonalny</option>
+            <option value="creative">✨ Tryb Kreatywny</option>
+          </select>
+        </label>
+        <div class="mode-desc" id="compass-mode-desc">Wagowy – uwzględnia domyślne wagi poszczególnych par.</div>
+      </div>
+
+      <div class="control-group">
+        <label><input type="checkbox" id="toggle-parties"> 🏛️ Partie polityczne</label>
+        <label><input type="checkbox" id="toggle-ideologies"> 💡 Ideologie</label>
+        <label><input type="checkbox" id="toggle-users"> 🐻 Użytkownicy</label>
+      </div>
+
+      <div id="creative-config-area" class="creative-config-area">
+        <h4>⚙️ Konfiguracja trybu kreatywnego</h4>
+        <div class="creative-label-edit">
+          <input type="text" id="modal-label-top" placeholder="Góra" value="Heteronomia">
+          <input type="text" id="modal-label-bottom" placeholder="Dół" value="Autonomia">
+          <input type="text" id="modal-label-left" placeholder="Lewo" value="Socjalizm">
+          <input type="text" id="modal-label-right" placeholder="Prawo" value="Kapitalizm">
+          <button id="modal-apply-labels" class="btn-secondary">Zmień etykiety</button>
+        </div>
+        <div id="modal-creative-pairs-list" class="creative-pairs-list"></div>
+        <button id="modal-apply-creative" class="btn-primary">Zastosuj konfigurację kreatywną</button>
+      </div>
+
+      <a href="index.html" class="back-link">← Powrót do testu</a>
+    </div>
+  </div>
+
+  <!-- Popup (do wyświetlania opisów) -->
+  <div id="popup" class="popup hidden" aria-hidden="true">
+    <div class="popup-content" role="dialog" aria-modal="true">
+      <p id="popup-text"></p>
+      <button id="closePopup" aria-label="Zamknij">Zamknij</button>
+    </div>
+  </div>
+
+  <!-- Skrypty -->
+  <script src="script.js"></script>
+  <script src="compass-core.js"></script>
+  <script src="compass-ui.js"></script>
+  <script src="compass-enhancements.js"></script>
+  <script src="kompas.js"></script>
+</body>
+</html>
