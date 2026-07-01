@@ -516,15 +516,16 @@
     });
   }
 
-  function renderFriendMarkers() {
-    if (!window.modalCompassInstance) return;
-    if (window.modalCompassInstance.clearFriendMarkers) window.modalCompassInstance.clearFriendMarkers();
-    refreshFriendCoordinates();
-    friendProfiles.forEach(friend => {
-      window.modalCompassInstance.addFriendMarker?.(friend.coords.x, friend.coords.y, friend.name, friend.color);
-    });
-    renderFriendsList();
-  }
+function renderFriendMarkers() {
+  // Używamy głównego kompasu, nie modala
+  if (!window.compassInstance) return;
+  if (window.compassInstance.clearFriendMarkers) window.compassInstance.clearFriendMarkers();
+  refreshFriendCoordinates();
+  friendProfiles.forEach(friend => {
+    window.compassInstance.addFriendMarker?.(friend.coords.x, friend.coords.y, friend.name, friend.color);
+  });
+  renderFriendsList();
+}
 
   function findFriendAnswer(friend, questionId) {
     return friend.answers.find(ans => ans.questionId === questionId);
@@ -694,127 +695,41 @@
     });
   }
 
-  function ensureModalEnhancementPanels() {
-    const controls = document.querySelector('.modal-controls');
-    if (!controls || document.getElementById('friend-compare-panel')) return;
 
-    const friendPanel = document.createElement('details');
-    friendPanel.id = 'friend-compare-panel';
-    friendPanel.className = 'modal-extra-panel';
-    friendPanel.open = true;
-    friendPanel.innerHTML = `
-      <summary>Porównanie ze znajomymi</summary>
-      <div class="friend-import-grid">
-        <input id="friend-name-input" type="text" maxlength="40" placeholder="Nazwa znajomego">
-        <textarea id="friend-code-input" rows="4" placeholder="Kod eksportu znajomego"></textarea>
-        <button id="friend-import-btn" type="button" class="primary-btn">Importuj znajomego</button>
-      </div>
-      <div id="friends-list" class="friends-list"></div>
-      <div id="friend-answer-comparison" class="friend-answer-comparison"></div>
-    `;
+function refreshVisibleOverlays() {
+  const showParties = document.getElementById('toggle-parties')?.checked || false;
+  const showIdeologies = document.getElementById('toggle-ideologies')?.checked || false;
+  if (window.compassInstance) loadOverlays(showParties, showIdeologies, window.compassInstance);
+}
 
-    const manualPanel = document.createElement('details');
-    manualPanel.id = 'manual-score-editor';
-    manualPanel.className = 'modal-extra-panel';
-    manualPanel.innerHTML = `
-      <summary>Edytuj wynik ręcznie</summary>
-      <p class="muted-small">Puste pary są pomijane. Wpisanie jednej strony automatycznie uzupełnia drugą.</p>
-      <div id="manual-score-pairs" class="manual-score-pairs"></div>
-      <div class="manual-score-actions">
-        <button id="manual-score-reset" type="button" class="secondary-btn">Wyczyść ręczny wynik</button>
-        <span id="manual-score-status" class="muted-small">Ręczna edycja jest nieaktywna.</span>
-      </div>
-    `;
+function applyCompassModeEverywhere(mode) {
+  currentCompassMode = mode || 'weighted';
+  const mainSelect = document.getElementById('compass-mode-select');
+  if (mainSelect && mainSelect.value !== currentCompassMode) mainSelect.value = currentCompassMode;
+  window.compassInstance?.updateModeLabel?.(currentCompassMode);
+  const creativeArea = document.getElementById('creative-config-area');
+  if (creativeArea) creativeArea.style.display = currentCompassMode === 'creative' ? 'block' : 'none';
+  updateManualStatus();
+  updateCompassDisplay();
+  refreshVisibleOverlays();
+  renderFriendMarkers();
+}
 
-    controls.appendChild(friendPanel);
-    controls.appendChild(manualPanel);
-
-    document.getElementById('friend-import-btn')?.addEventListener('click', () => {
-      const nameInput = document.getElementById('friend-name-input');
-      const codeInput = document.getElementById('friend-code-input');
-      const rawCode = codeInput.value.trim();
-      if (!rawCode) {
-        showPopup('Wklej kod eksportu znajomego.');
-        return;
-      }
-      const fallbackName = `Znajomy ${friendProfiles.length + 1}`;
-      const friend = computeFriendProfile((nameInput.value.trim() || fallbackName), rawCode);
-      if (!friend) {
-        showPopup('Nie udało się odczytać kodu znajomego.');
-        return;
-      }
-      friendProfiles.push(friend);
-      nameInput.value = '';
-      codeInput.value = '';
-      renderFriendMarkers();
-      renderFriendAnswerComparison();
-      refreshUsersRanking();
-    });
-
-    setupManualEditor();
-    renderFriendsList();
-    renderFriendAnswerComparison();
-  }
-
-  function refreshVisibleOverlays() {
-    const showParties = document.getElementById('toggle-parties')?.checked || false;
-    const showIdeologies = document.getElementById('toggle-ideologies')?.checked || false;
-    if (window.compassInstance) loadOverlays(showParties, showIdeologies, window.compassInstance);
-    const modalShowParties = document.getElementById('modal-toggle-parties')?.checked || false;
-    const modalShowIdeologies = document.getElementById('modal-toggle-ideologies')?.checked || false;
-    if (window.modalCompassInstance) loadOverlays(modalShowParties, modalShowIdeologies, window.modalCompassInstance);
-  }
-
-  function applyCompassModeEverywhere(mode) {
-    currentCompassMode = mode || 'weighted';
-    const mainSelect = document.getElementById('compass-mode-select');
-    const modalSelect = document.getElementById('modal-compass-mode-select');
-    if (mainSelect && mainSelect.value !== currentCompassMode) mainSelect.value = currentCompassMode;
-    if (modalSelect && modalSelect.value !== currentCompassMode) modalSelect.value = currentCompassMode;
-    window.compassInstance?.updateModeLabel?.(currentCompassMode);
-    window.modalCompassInstance?.updateModeLabel?.(currentCompassMode);
-    const creativeArea = document.getElementById('creative-config-area');
-    if (creativeArea) creativeArea.style.display = currentCompassMode === 'creative' ? 'block' : 'none';
-    updateManualStatus();
-    updateCompassDisplay();
-    refreshVisibleOverlays();
-    renderFriendMarkers();
-  }
-
-  function bindCompassModeSelectors() {
-    ['compass-mode-select', 'modal-compass-mode-select'].forEach(id => {
-      const select = document.getElementById(id);
-      if (!select || select.dataset.enhancedModeBound === 'true') return;
-      select.dataset.enhancedModeBound = 'true';
-      select.value = currentCompassMode || 'weighted';
-      select.addEventListener('change', () => applyCompassModeEverywhere(select.value));
-    });
-  }
+function bindCompassModeSelectors() {
+  const select = document.getElementById('compass-mode-select');
+  if (!select || select.dataset.enhancedModeBound === 'true') return;
+  select.dataset.enhancedModeBound = 'true';
+  select.value = currentCompassMode || 'weighted';
+  select.addEventListener('change', () => applyCompassModeEverywhere(select.value));
+}
 
   // Podpięcie toggle-users do odświeżania nakładek
   function bindUserOverlayToggle() {
-    ['toggle-users', 'modal-toggle-users'].forEach(id => {
-      const toggle = document.getElementById(id);
-      if (!toggle || toggle.dataset.userOverlayBound === 'true') return;
-      toggle.dataset.userOverlayBound = 'true';
-      toggle.addEventListener('change', () => refreshVisibleOverlays());
-    });
-  }
-
-  function bindModalEnhancementOpenHandler() {
-    bindCompassModeSelectors();
-    const openBtn = document.getElementById('open-compass-modal');
-    if (!openBtn || openBtn.dataset.enhancedBound === 'true') return;
-    openBtn.dataset.enhancedBound = 'true';
-    openBtn.addEventListener('click', () => {
-      setTimeout(() => {
-        ensureModalEnhancementPanels();
-        bindCompassModeSelectors();
-        bindUserOverlayToggle();
-        applyCompassModeEverywhere(currentCompassMode || 'weighted');
-      }, 0);
-    });
-  }
+  const toggle = document.getElementById('toggle-users');
+  if (!toggle || toggle.dataset.userOverlayBound === 'true') return;
+  toggle.dataset.userOverlayBound = 'true';
+  toggle.addEventListener('change', () => refreshVisibleOverlays());
+}
 
   const baseInitCompassModal = window.initCompassModal || initCompassModal;
   window.initCompassModal = function () {
@@ -827,7 +742,6 @@
       openBtn.addEventListener('click', () => {
         setTimeout(() => {
           ensureModalEnhancementPanels();
-          bindCompassModeSelectors();
           bindUserOverlayToggle();
           applyCompassModeEverywhere(currentCompassMode || 'weighted');
         }, 0);
@@ -848,7 +762,6 @@
 
   setTimeout(() => {
     bindCompassModeSelectors();
-    bindModalEnhancementOpenHandler();
     bindUserOverlayToggle();
   }, 0);
 
