@@ -1675,11 +1675,9 @@ function setupModeSelector() {
 
 // ======================= INTEGRACJA Z KOMPASEM =======================
 let currentCompassMode = 'weighted';
-let currentCreativeConfig = {
-  activePairs: [],
-  labels: { top: "Heteronomia", bottom: "Autonomia", left: "Socjalizm", right: "Kapitalizm" }
-};
-let compassUserValues = null; // mapa wartości dla użytkownika
+let currentCreativeConfig = { activePairs: [], labels: { top: "Heteronomia", bottom: "Autonomia", left: "Socjalizm", right: "Kapitalizm" } };
+let compassUserValues = null;
+
 
 // Funkcja do budowania mapy wartości dla użytkownika na podstawie pairResults
 function buildUserValuesMap(pairResults) {
