@@ -1,13 +1,17 @@
 // script.js – z dodanymi logotypami partii i ideologii (ranking, popup, symulacja) + obsługa języka
 let config = null;
-let configBase = null;      // oryginalne dane z data.json (wartości, mapowania)
+let configBase = null;
 let politicalProfiles = null;
-let translations = null;    // aktualne tłumaczenia (teksty)
+let translations = null;
 let currentLanguage = 'pl';
 let userAnswers = [];
-let currentScoringMode = 'full';   // 'full' lub 'affirmative'
-let currentMatchingMode = 'modern'; // 'modern' lub 'legacy'
-let simulatedEntity = null;         // { type: 'party'|'ideology', name: string }
+let currentScoringMode = 'full';
+let currentMatchingMode = 'modern';
+let simulatedEntity = null;
+let currentCompassMode = 'weighted';
+let currentCreativeConfig = { activePairs: [], labels: { top: "Heteronomia", bottom: "Autonomia", left: "Socjalizm", right: "Kapitalizm" } };
+let compassUserValues = null;
+
 
 const questionsContainer = document.getElementById('questions-container');
 const submitBtn = document.getElementById('submitBtn');
@@ -1940,28 +1944,21 @@ function computeScoresForAnswers(answers, mode) {
   return { pairResults };
 }
 
-// Inicjalizacja kompasu po pokazaniu wyników
+// ======================= INICJALIZACJA KOMPASU =======================
 function initCompassAfterResults() {
   const container = document.getElementById('compass-container');
   if (!container) return;
   if (window.compassInstance && window.compassInstance.destroy) window.compassInstance.destroy();
   window.compassInstance = new CompassUI(container, {
     mode: currentCompassMode,
-    onModeChange: (mode) => {
+    onModeChange: function(mode) {
       currentCompassMode = mode;
-      if (mode === 'creative') {
-        // Wczytaj zapisaną konfigurację kreatywną
-        if (window.compassInstance.getCreativeConfig) {
-          currentCreativeConfig = window.compassInstance.getCreativeConfig();
-        }
-      }
       updateCompassDisplay();
-      // Odśwież nakładki
       const showParties = document.getElementById('toggle-parties')?.checked || false;
       const showIdeologies = document.getElementById('toggle-ideologies')?.checked || false;
       loadOverlays(showParties, showIdeologies, window.compassInstance);
     },
-    onCreativeConfigChange: (config) => {
+    onCreativeConfigChange: function(config) {
       currentCreativeConfig = config;
       updateCompassDisplay();
       const showParties = document.getElementById('toggle-parties')?.checked || false;
@@ -1969,27 +1966,20 @@ function initCompassAfterResults() {
       loadOverlays(showParties, showIdeologies, window.compassInstance);
     }
   });
-  // Ustaw wartości użytkownika
   if (compassUserValues) {
     const coords = computeCoordinatesFromValues(compassUserValues, currentCompassMode, currentCreativeConfig);
     window.compassInstance.updateMarker(coords.x, coords.y);
     window.compassInstance.updateActivePairs(coords.activePairsCount);
     window.compassInstance.updateModeLabel(currentCompassMode);
   }
-  // Obsługa przełączników nakładek
   const toggleParties = document.getElementById('toggle-parties');
   const toggleIdeologies = document.getElementById('toggle-ideologies');
-  if (toggleParties) {
-    toggleParties.addEventListener('change', () => {
-      loadOverlays(toggleParties.checked, toggleIdeologies.checked, window.compassInstance);
-    });
-  }
-  if (toggleIdeologies) {
-    toggleIdeologies.addEventListener('change', () => {
-      loadOverlays(toggleParties.checked, toggleIdeologies.checked, window.compassInstance);
-    });
-  }
-  // Inicjalne załadowanie nakładek
+  if (toggleParties) toggleParties.addEventListener('change', function() {
+    loadOverlays(toggleParties.checked, toggleIdeologies.checked, window.compassInstance);
+  });
+  if (toggleIdeologies) toggleIdeologies.addEventListener('change', function() {
+    loadOverlays(toggleParties.checked, toggleIdeologies.checked, window.compassInstance);
+  });
   loadOverlays(false, false, window.compassInstance);
 }
 
